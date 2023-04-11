@@ -1,0 +1,28 @@
+NET ?=
+
+# sources.list
+sources_list_file = sources_default.list
+
+# git
+github_url = https://github.com
+github_repo = https://github.com
+github_raw = https://raw.githubusercontent.com
+
+# other common var
+## module home
+module_home = /opt/modules
+code_home = /opt/coding
+repo_home = /opt/repo
+data_home = /opt/data
+
+ifeq "${NET}" "CN"
+
+# sources.list
+sources_list_file = sources_tsinghua.list
+
+# git
+github_url = https://ghproxy.com/https://github.com
+github_repo = https://ghproxy.com/https://github.com
+github_raw = https://ghproxy.com/https://raw.githubusercontent.com
+
+endif
