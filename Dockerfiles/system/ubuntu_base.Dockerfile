@@ -9,6 +9,10 @@ ARG ROOT_PWD=root!centos123
 ARG TARGETARCH
 ARG sources_list_file
 ARG github_url
+ARG s6_version
+ARG shell_tools_version
+# NET: for init scripts
+ARG NET
 
 COPY ./repo/sources*.list /tmp/
 COPY ./scripts/init-*.sh /tmp/
@@ -50,6 +54,19 @@ RUN apt update && \
 ## timezone
     cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 
+## s6
+    bash /tmp/init-system-s6.sh && \
+### check s6 is install success
+    ls -l /init && \
+
+## init scripts
+    cp /tmp/init-system.sh /init-system && \
+    cp /tmp/init-ssh.sh /init-ssh && \
+    cp /tmp/init-service.sh /init-service && \
+    chmod +x /init-* && \
+
 ## remove tmp files
     rm /tmp/sources*.list && \
     rm /tmp/init-*.sh
+
+ENTRYPOINT ["/init-system"]
