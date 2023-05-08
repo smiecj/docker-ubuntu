@@ -13,3 +13,9 @@ build_base:
 
 run_base:
 	docker run -d -it --hostname test_ubuntu --name dev_ubuntu ${IMAGE_BASE}
+
+build_xrdp:
+	bash ${build_script} ${cmd} ${platform} ./Dockerfiles/net/xrdp/xrdp.Dockerfile ${IMAGE_XRDP} ./Dockerfiles/net/xrdp
+
+run_xrdp:
+	docker run -d -it --hostname test_xrdp --name dev_xrdp -p 3389:3389 ${IMAGE_XRDP}

@@ -1,6 +1,9 @@
 ARG UBUNTU_VERSION
 FROM ubuntu:${UBUNTU_VERSION}
 
+# bash
+SHELL ["/bin/bash", "-c"]
+
 # default env
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
@@ -21,25 +24,32 @@ COPY ./scripts/init-*.sh /tmp/
 ## install ca-certificates for other repo: https://askubuntu.com/a/1145374
 RUN apt update && \
     apt -y install ca-certificates && \
+    apt -y install gnupg2 && \
     sources_list_file_prefix=`echo ${sources_list_file} | sed 's#.list##g'` && \
     if [ -f /tmp/${sources_list_file_prefix}_${TARGETARCH}.list ]; then\
     sources_list_file=${sources_list_file_prefix}_${TARGETARCH}.list;\
     fi && \
+    if [ "arm64" == "${TARGETARCH}" ]; then\
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5EDB1B62EC4926EA;\
+    fi && \
     cp /tmp/${sources_list_file} /etc/apt/sources.list && \
     apt update && \
 
+## remove some pkg to fix pkgProblemResolver error
+    dependencies="perl libfile-spec-perl" && \
+    for dep in ${dependencies[@]}; \
+    do \
+        echo "[test] to remove current dep: ${dep}"; \
+        apt -y remove ${dep}; \
+    done && \
+
 ## some dev tools
-### git
-    apt -y install git \
-### sshd
-    openssh-server \
-### gcc & make
-    build-essential make cmake \
-### python3 pip
-    python3-pip \
-### other useful tools
-    lsof net-tools vim lrzsz zip unzip bzip2 git wget curl sudo passwd \
-    expect jq telnet net-tools rsync logrotate gettext && \
+    dependencies="git openssh-server build-essential make cmake python3-pip lsof net-tools vim lrzsz zip unzip bzip2 git wget curl sudo passwd expect jq telnet net-tools rsync logrotate gettext" && \
+    for dep in ${dependencies[@]}; \
+    do \
+        echo "[test] to install current dep: ${dep}"; \
+        apt -y install ${dep}; \
+    done && \
 ### git config
     git config --global pull.rebase false && \
 

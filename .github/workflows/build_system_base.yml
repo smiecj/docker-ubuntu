@@ -21,4 +21,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: build_system_base
         run: |
-          NET=CN REPO=mzsmieli cmd=push platform=linux/amd64,linux/arm64 make build_base
+          REPO=mzsmieli cmd=push platform=linux/amd64,linux/arm64 make build_base
